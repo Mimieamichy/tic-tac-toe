@@ -29,22 +29,29 @@ const winningCombo = [
   { combo: [0, 4, 8], strikeClass: crossDone },
   { combo: [2, 4, 6], strikeClass: crossDtwo },
 ];
-function checkWinner(tile, setStrikeClass) {
+function checkWinner(tile, setStrikeClass, SetGameState) {
   for (const { combo, strikeClass } of winningCombo) {
     const tileVal1 = tile[combo[0]];
     const tileVal2 = tile[combo[1]];
     const tileVal3 = tile[combo[2]];
     if (tileVal1 !== null && tileVal1 === tileVal2 && tileVal2 === tileVal3) {
       setStrikeClass(strikeClass);
+      if (tileVal1 === playerX) {
+        SetGameState(GameState.playerXwin);
+      }
+      else{
+        SetGameState(GameState.playerOwin);
+      }
     }
   }
+  const filledTiles =
 }
 
 export default function TicTac() {
   const [tile, setTile] = useState(Array(9).fill(null));
   const [turns, setTurns] = useState(playerX);
   const [strikeClass, setStrikeClass] = useState();
-  cont[(gameState, setGameState)] = useState(GameState.inprogress);
+  const [gameState, SetGameState] = useState(GameState.inprogress);
 
   const handleTileClick = (index) => {
     if (tile[index] !== null) {
@@ -55,8 +62,9 @@ export default function TicTac() {
     setTile(newTiles);
     turns === playerX ? setTurns(playerO) : setTurns(playerX);
   };
+
   useEffect(() => {
-    checkWinner(tile, setStrikeClass);
+    checkWinner(tile, setStrikeClass, SetGameState);
   }, [tile]);
 
   return (
@@ -69,7 +77,7 @@ export default function TicTac() {
         tile={tile}
         handleTileClick={handleTileClick}
       />
-      <GameOver />
+      <GameOver gameState={gameState} />
     </div>
   );
 }
