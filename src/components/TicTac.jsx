@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Board from "./Board";
 import GameOver from "./GameOver";
 import { GameState } from "../Constants/GameState";
+import Reset from "./Reset";
 
 const playerX = "X";
 const playerO = "O";
@@ -38,13 +39,16 @@ function checkWinner(tile, setStrikeClass, SetGameState) {
       setStrikeClass(strikeClass);
       if (tileVal1 === playerX) {
         SetGameState(GameState.playerXwin);
-      }
-      else{
+      } else {
         SetGameState(GameState.playerOwin);
       }
+      return;
     }
   }
-  const filledTiles =
+  const filledTiles = tile.every((tile) => tile !== null);
+  if (filledTiles) {
+    SetGameState(GameState.draw);
+  }
 }
 
 export default function TicTac() {
@@ -54,6 +58,9 @@ export default function TicTac() {
   const [gameState, SetGameState] = useState(GameState.inprogress);
 
   const handleTileClick = (index) => {
+    if (gameState !== GameState.inprogress) {
+      return;
+    }
     if (tile[index] !== null) {
       return;
     }
@@ -62,6 +69,13 @@ export default function TicTac() {
     setTile(newTiles);
     turns === playerX ? setTurns(playerO) : setTurns(playerX);
   };
+
+  const handleReset = () => {
+    SetGameState(GameState.inprogress)
+    setTile(Array(9).fill(null))
+    setTurns(playerX)
+    setStrikeClass(null)
+  }
 
   useEffect(() => {
     checkWinner(tile, setStrikeClass, SetGameState);
@@ -78,6 +92,7 @@ export default function TicTac() {
         handleTileClick={handleTileClick}
       />
       <GameOver gameState={gameState} />
+      <Reset gameState={gameState} handleReset={handleReset}/>
     </div>
   );
 }
